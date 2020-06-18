@@ -207,7 +207,7 @@ c <- matrix(NA, n.sims, 2)
 c[, 1] <- apply(disc.cost.0, 1, sum)
 c[, 2] <- apply(disc.cost.1, 1, sum)
 
-# Sum all discounted valees of effectiveness and create a matrix of discounted effectiveness
+# Sum all discounted values of effectiveness and create a matrix of discounted effectiveness
 e <- matrix(NA, n.sims, 2)
 e[, 1] <- apply(disc.eff.0, 1, sum)
 e[, 2] <- apply(disc.eff.1, 1, sum)
