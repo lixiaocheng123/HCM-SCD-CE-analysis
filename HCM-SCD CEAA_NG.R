@@ -3,32 +3,89 @@
 
 # Loads packages
 
-# s = 1 Healthy health state
-#     2 Stroke HCM-Related Health state
-#     3 SCD(Sudden Cardiac Death) Health state
-#     4 DAC (Death All Causes) Health state
+# s = 1. Healthy state
+#     2. Stroke HCM-Related state
+#     3. SCD(Sudden Cardiac Death) state
+#     4. DAC (Death All Causes) state
 
 # EXISTING METHOD OF SCD-RISK-PREDICTION (EMSRP): Current Method of SCD Risk Prediction
 # HCM - SCD RISK PREDICTION MODEL(HSRPM)
 
-S <- 4 # Number of health states
+S <- 4 # number of health states
 
-tmax <- 10 # Number of years of follow up
+tmax <- 10 # years of follow up
 
 # load observed data on transitions for the two treatments
 
-Model.file <- "HCMmodel.txt"              # Specifies file with the model defining observed data
-dataBugs <- source("HCMdata.txt")$value   # Loads observed data
+dataBugs <- source("HCMdata.txt")$value
 
-inits1 <- source("hcminits1.txt")$value   # Loads the initial values for the first chain
-inits2 <- source("hcminits2.txt")$value   # Loads the initial values of the second chain
-inits <- list(inits1, inits2)              # Combines into a list files with inital values
+
+
+list(n.0 = c(100,80,60,55), # number of patients in each state
+     n.1 = c(100,80,50,55),
+     eta.0 = structure(.Data = c(NA,NA,  # beta distribution parameters ~Beta(eta, tau)
+                                 30,NA,
+                                 40,20,
+                                 25,20),
+                       .Dim = c(2,4)),
+     eta.1 = structure(.Data = c(NA,NA,
+                                 20,NA,
+                                 30,20,
+                                 25,20),
+                       .Dim = c(2,4)),
+     tau.0 = structure(.Data = c(NA,NA,
+                                 70,NA,
+                                 30,60,
+                                 5,40),
+                       .Dim = c(2,4)),
+     tau.1 = structure(.Data = c(NA,NA,
+                                 80,NA,
+                                 50,60,
+                                 25,40),
+                       .Dim = c(2,4)),
+     y.0 = structure(.Data = c(2,NA,NA,NA, # number patient changing state at time step
+                               NA,5,NA,NA,
+                               NA,NA,6,NA,
+                               NA,NA,NA,7),
+                     .Dim = c(4,4)),
+     y.1 = structure(.Data = c(4,NA,NA,NA,
+                               NA,3,NA,NA,
+                               NA,NA,4,NA,
+                               NA,NA,NA,6),
+                     .Dim = c(4,4)))
+
+##TODO: I cant see how these number match up with table in report...
+#status quo
+c(NA,4,8,4,
+  NA,NA,NA,NA,
+  NA,NA,NA,NA,
+  NA,NA,NA,NA)
+
+
+inits1 <- source("hcminits1.txt")$value
+list(lambda.0 =
+       structure(.Data = c(NA,NA,NA,NA,
+                           0.45,NA,NA,NA,
+                           0.75,0.56,NA,NA,
+                           0.79,0.65,NA,NA,
+                           NA,NA,NA,NA),
+                 .Dim = c(4,5)),
+     lambda.1 = structure(.Data = c(NA,NA,NA,NA,
+                                    0.36,NA,NA,NA,
+                                    0.64,0.54,NA,NA,
+                                    0.67,0.54,NA,NA,
+                                    NA,NA,NA,NA),
+                          .Dim = c(4,5)))
+
+inits2 <- source("hcminits2.txt")$value
+inits <- list(inits1, inits2)
 
 # run MCMC
 
 library(R2OpenBUGS)
 
-params <- c("lambda.0", "lambda.1")        # Defines parameters to save
+model_file <- "HCMmodel.txt"
+params <- c("lambda.0", "lambda.1")
 n.iter <- 10000
 n.burnin<- 5000
 n.thin <- floor((n.iter - n.burnin)/500)
@@ -39,7 +96,7 @@ mm1 <- bugs(
   data = dataBugs,
   inits = inits,
   parameters.to.save = params,
-  model.file = Model.file,
+  model_file = model_file,
   n.chains = n.chain,
   n.iter = n.iter,
   n.burnin = n.burnin,
@@ -49,7 +106,7 @@ mm1 <- bugs(
 print(mm1, digits = 3)
 attach.bugs(mm1)
 
-# Analyze MCMC Convergence with CODA
+# Analyse MCMC Convergence with CODA
 # Check if all entries in Rhat component of Bugs output are less than 1.1
 # all(mm1$summary[,"Rhat"]< 1.1)
 
@@ -57,7 +114,7 @@ hcm <- bugs(
   data = dataBugs,
   inits = inits,
   parameters.to.save = params,
-  model.file = Model.file,
+  model_file = model_file,
   codaPkg = TRUE,
   n.chains = n.chain,
   n.iter = n.iter,
@@ -124,11 +181,11 @@ for (i in 1:n.sims) {
 
 utility.0 <- utility.1 <- array(NA, c(n.sims, 2, tmax)) 
 
-dec.rate <- 0.35                               # utility decrement rate to apply when a non-fatal HCM event occurs at j >0
-utility.0[, 1, ]  <- rep(0.637, tmax)          # Utility for occupying the state "Healthy" under treatment t=0
-utility.1[, 1, ]  <- rep(0.637, tmax)          # Utility for occupying the state "Healthy" under treatment t= 1
-utility.0[, 2, 1] <- dec.rate*utility.0[1,1,1] # Utility for occupying state "Stroke-HCM Related" under treatment t=0
-utility.1[, 2, 1] <- dec.rate*utility.1[1,1,1] # Utility for occupying state "Stroke-HCM Related" under treatment t=1
+dec.rate <- 0.35
+utility.0[, 1, ]  <- rep(0.637, tmax)          # Healthy under t = 0
+utility.1[, 1, ]  <- rep(0.637, tmax)          # Healthy under t = 1
+utility.0[, 2, 1] <- dec.rate*utility.0[1, 1, 1] # Stroke-HCM Related" under t = 0
+utility.1[, 2, 1] <- dec.rate*utility.1[1, 1, 1] # Stroke-HCM Related" under t = 1
 
 for (i in 1:n.sims) {
   for (j in 2:tmax) {
@@ -139,7 +196,7 @@ for (i in 1:n.sims) {
 
 # compute QALYs accumulated under each treatment for each year of follow up
 
-Qal.0 <- Qal.1 < -matrix(NA, n.sims, tmax)
+Qal.0 <- Qal.1 <- matrix(NA, n.sims, tmax)
 
 for (i in 1:n.sims) {
   for (j in 1:tmax) {
@@ -157,8 +214,8 @@ eff <- array(NA, c(n.sims, 2, tmax))
 eff[, 1, ] <- apply(Qal.0, 1, sum)
 eff[, 2, ] <- apply(Qal.1, 1, sum)
 
-# define the annual cost for each non-fatal health state under each treatment
-unit.cost.0 <- c(4792, 22880)
+# annual cost for each non-fatal health state under each treatment
+unit.cost.0 <- c(4792, 22880)       # Healthy, Stroke
 unit.cost.1 <- c(4812, 22880) 
 
 # Create a holding cost variable to track yearly (j > 0) accumulated cost under each treatment

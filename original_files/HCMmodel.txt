@@ -1,0 +1,46 @@
+
+
+ 
+model {
+
+
+
+#####################################################
+
+# Binomial distribution for  the observed states 
+
+	for(s in 1:4){
+		y.0[s,s] ~ dbin(lambda.0[s,s], n.0[s])
+		y.1[ s,s] ~ dbin(lambda.1[s,s], n.1[s])
+	  
+	}
+	
+	# Beta prior distributions for the transition probabilities of Non-absorbet states
+     
+  for (s in 1: 2){
+			for (i in 1: 2){
+				lambda.0[i, s +i] ~ dbeta(eta.0[i, s+i], tau.0[i,s+i])
+	   		lambda.1[i, s+i] ~ dbeta(eta.1[i,s+i ], tau.1[i,s+i])
+	
+				}
+	 }
+			# Beta prior distribution for transitions from state "Healthy" to "Death All Causes"
+			
+				lambda.0[1, 4] ~ dbeta(eta.0[1,4], tau.0[1,4])
+	   		lambda.1[1, 4] ~ dbeta(eta.1[1,4 ], tau.1[1,4])
+	
+	# Non-absobert state Transitions
+for (k in 1 : 2){ 
+		 
+	 lambda.0[k,k] < - 1 -  (lambda.0[k,k+1] + lambda.0[k,k+2] + lambda.0[k,k+3])/3
+	  lambda.1[k,k] < - 1 -  (lambda.1[k,k+1] + lambda.1[k,k+2] + lambda.1[k,k+3])/3
+}
+	
+	# Deterministic transition probabilities for absobert states
+	for (s in 3:4) {
+		lambda.0[s,s] <- 1
+		lambda.1[s,s] <- 1
+	  }
+		lambda.0[2,5] <- 0
+		lambda.1[2,5] <- 0
+}
