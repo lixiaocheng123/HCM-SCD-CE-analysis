@@ -30,8 +30,6 @@ init_pop <- function(n_init,
 # e_unit: health unit values
 # delta: discount rate
 #
-##TODO: hard coded for 2 interventions; need to generalise
-#
 ce_sim <- function(pop,
                    lambda,
                    c_unit,
@@ -54,24 +52,20 @@ ce_sim <- function(pop,
       
       if (j > 1) {
         for (s in seq_len(S)) {
-          pop[[1]][s, j, i] <- t(pop[[1]][, j - 1, i]) %*% lambda[[1]][, s, i]
-          pop[[2]][s, j, i] <- t(pop[[2]][, j - 1, i]) %*% lambda[[2]][, s, i]
+          for (k in seq_len(n_interv)) {
+            pop[[k]][s, j, i] <- t(pop[[k]][, j - 1, i]) %*% lambda[[k]][, s, i]
+          }
         }
       }
       
       disc <- (1 + delta)^(j-1)
       
-      cost[[1]][i, j] <- c_unit[[1]] %*% pop[[1]][, j, i]
-      cost[[2]][i, j] <- c_unit[[2]] %*% pop[[2]][, j, i]
-      
-      dcost[[1]][i, j] <- cost[[1]][i, j] / disc
-      dcost[[2]][i, j] <- cost[[2]][i, j] / disc
-      
-      eff[[1]][i, j] <- e_unit[[1]] %*% pop[[1]][, j, i]
-      eff[[2]][i, j] <- e_unit[[2]] %*% pop[[2]][, j, i]
-      
-      deff[[1]][i, j] <- eff[[1]][i, j] / disc
-      deff[[2]][i, j] <- eff[[2]][i, j] / disc
+      for (k in seq_len(n_interv)) {
+        cost[[k]][i, j] <- c_unit[[k]] %*% pop[[k]][, j, i]
+        dcost[[k]][i, j] <- cost[[k]][i, j] / disc
+        eff[[k]][i, j] <- e_unit[[k]] %*% pop[[k]][, j, i]
+        deff[[k]][i, j] <- eff[[k]][i, j] / disc
+      }
     }
   }
   
