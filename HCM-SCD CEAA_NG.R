@@ -43,7 +43,7 @@ list(n.0 = c(100,80,60,55), # number of patients in each state
                                  50,60,
                                  25,40),
                        .Dim = c(2,4)),
-     y.0 = structure(.Data = c(2,NA,NA,NA, # number patient changing state at time step
+     y.0 = structure(.Data = c(2,NA,NA,NA, # number patient changing state at time step?
                                NA,5,NA,NA,
                                NA,NA,6,NA,
                                NA,NA,NA,7),
@@ -125,14 +125,12 @@ hcm <- bugs(
 # Convert bugs output for coda and create an mcmc object
 hcm.coda <- read.bugs(hcm)
 
-# run Markov model
-start <- c(1000, 0, 0, 0)         # cohort of 1000 individuals
 
-# NB All patients enter the model from the first state "Healthy"
+#  Markov model -----------------------------------------------------------
 
-# Markov transitions
+# all patients enter model in Healthy
+start <- c(1000, 0, 0, 0)
 
-## initialise population
 m.0 <- m.1 <- array(NA, c(n.sims, S, tmax + 1))
 
 for (s in 1:S) {
@@ -144,7 +142,7 @@ for (s in 1:S) {
 #     ie only the first 2 rows, as the last two are deterministically defined as c(0,0,1,1)
 #     because once a patient is in SCD,and DAC, they can't move away.
 #
-#     So there is the need to 
+#     So need to 
 #     reconstruct a full matrix with S rows and S columns for each MCMC simulations.
 #     This is done by 
 #     defining new arrays lambda0 and lambda1 and then stacking up the simulated values for the first (S-2)
