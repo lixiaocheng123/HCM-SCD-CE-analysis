@@ -1,5 +1,7 @@
 
-# m: number of individuals [state, time, n_sim]
+# Create initial population
+#
+# pop: number of individuals [state, time, n_sim]
 # n_sim: number of simulations (from jags)
 # tmax: time horizon
 # n_interv: number of interventions, including status-quo
@@ -24,46 +26,61 @@ init_pop <- function(n_init,
 }
 
 
+# Markov model cost-effectiveness simulation
+#
 # pop: number of individuals 
 # lambda: transition probabilities
-# c_unit: unit costs
-# e_unit: health unit values
+# c_unit: unit costs per state
+# e_unit: health unit values per state
+# pdecr: linear utility decrease per state
 # delta: discount rate
 #
 ce_sim <- function(pop,
                    lambda,
                    c_unit,
                    e_unit,
+                   pdecr = NA,
                    delta = 0.035) {
   
-  S <- dim(pop[[1]])[1]        #number of states
-  tmax <- dim(pop[[1]])[2]
+  stopifnot(delta >= 0, delta <= 1)
+  
+  S <- dim(pop[[1]])[1]        # number of states
+  tmax <- dim(pop[[1]])[2]     # time horizon
   n_sim <- dim(pop[[1]])[3]
   n_interv <- length(pop)
   
-  cost <- map(1:n_interv, ~matrix(NA, nrow = n_sim, ncol = tmax))
-  dcost <- map(1:n_interv, ~matrix(NA, nrow = n_sim, ncol = tmax))
-  eff <- map(1:n_interv, ~matrix(NA, nrow = n_sim, ncol = tmax))
-  deff <- map(1:n_interv, ~matrix(NA, nrow = n_sim, ncol = tmax))
+  if (is.na(pdecr)) {
+    pdecr <- map(1:n_interv, ~rep(0, S))}
   
-  for (i in seq_len(n_sim)) {
-    
-    for (j in seq_len(tmax)) {
-      
-      if (j > 1) {
-        for (s in seq_len(S)) {
-          for (k in seq_len(n_interv)) {
-            pop[[k]][s, j, i] <- t(pop[[k]][, j - 1, i]) %*% lambda[[k]][, s, i]
+  # initialise empty output matrices
+  out_mat <- map(1:n_interv, ~matrix(NA,
+                                     nrow = n_sim,
+                                     ncol = tmax))
+  cost <- out_mat
+  eff <- out_mat
+  dcost <- out_mat
+  deff <- out_mat
+  
+  for (k in seq_len(n_interv)) {
+    for (i in seq_len(n_sim)) {
+      for (j in seq_len(tmax)) {
+        
+        if (j > 1) {
+          for (s in seq_len(S)) {
+            
+            pop[[k]][s, j, i] <-
+              t(pop[[k]][, j - 1, i]) %*% lambda[[k]][, s, i]
           }
         }
-      }
-      
-      disc <- (1 + delta)^(j-1)
-      
-      for (k in seq_len(n_interv)) {
+        
+        disc <- (1 + delta)^(j-1)
+        
+        e_state <- e_unit[[k]]*(1 - pdecr[[k]])^j
+        
         cost[[k]][i, j] <- c_unit[[k]] %*% pop[[k]][, j, i]
+        eff[[k]][i, j] <- e_state %*% pop[[k]][, j, i]
+        
         dcost[[k]][i, j] <- cost[[k]][i, j] / disc
-        eff[[k]][i, j] <- e_unit[[k]] %*% pop[[k]][, j, i]
         deff[[k]][i, j] <- eff[[k]][i, j] / disc
       }
     }

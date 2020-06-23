@@ -56,10 +56,6 @@ list(n.0 = c(100,80,60,55), # number of patients in each state
 
 ##TODO: I cant see how these number match up with table in report...
 #status quo
-c(NA,4,8,4,
-  NA,NA,NA,NA,
-  NA,NA,NA,NA,
-  NA,NA,NA,NA)
 
 
 inits1 <- source("hcminits1.txt")$value
@@ -138,16 +134,15 @@ for (s in 1:S) {
   m.1[, s, 1] <- start[s]
 }
 
-#     BUGS only outputs matrices for lambda.0 and lambda.1 with simulations for the "random" part
-#     ie only the first 2 rows, as the last two are deterministically defined as c(0,0,1,1)
-#     because once a patient is in SCD,and DAC, they can't move away.
-#
-#     So need to 
-#     reconstruct a full matrix with S rows and S columns for each MCMC simulations.
-#     This is done by 
-#     defining new arrays lambda0 and lambda1 and then stacking up the simulated values for the first (S-2)
-#     rows saved in lambda.0[i,,] and lambda.1[i,,] for MCMC simulations i with a row vector
-#     containing (S-2) 0s and then two 1's, ie c(0,0, 1,1)
+# BUGS only outputs matrices for lambda.0 and lambda.1 with simulations for the "random" part
+# i.e. only the first 2 rows, as the last two are deterministically defined as c(0, 0, 1, 1)
+# because once a patient is in SCD,and DAC, they can't move away.
+# So need to 
+# reconstruct a full matrix with S rows and S columns for each MCMC simulations.
+# This is done by 
+# defining new arrays lambda0 and lambda1 and then stacking up the simulated values for the first (S-2)
+# rows saved in lambda.0[i, , ] and lambda.1[i, , ] for MCMC simulations i with a row vector
+# containing (S-2) 0s and then two 1's, ie c(0, 0, 1, 1)
 
 lambda0 <- lambda1 <- array(NA, c(n.sims, S, S))
 
@@ -173,17 +168,20 @@ for (i in 1:n.sims) {
 
 
 
+## economic analysis
 
-
-# economic analysis
+##TODO: what is this? Each year of clock time utility in stroke decreases linearly by 35% ?
 
 utility.0 <- utility.1 <- array(NA, c(n.sims, 2, tmax)) 
 
 dec.rate <- 0.35
-utility.0[, 1, ]  <- rep(0.637, tmax)          # Healthy under t = 0
-utility.1[, 1, ]  <- rep(0.637, tmax)          # Healthy under t = 1
-utility.0[, 2, 1] <- dec.rate*utility.0[1, 1, 1] # Stroke-HCM Related" under t = 0
-utility.1[, 2, 1] <- dec.rate*utility.1[1, 1, 1] # Stroke-HCM Related" under t = 1
+
+utility.0[, 1, ]  <- rep(0.637, tmax)            # Healthy under t = 0
+utility.1[, 1, ]  <- rep(0.637, tmax)            # Healthy under t = 1
+
+##TODO: should this be by (1 - dec.rate) instead?
+utility.0[, 2, 1] <- dec.rate*utility.0[1, 1, 1] # Stroke-HCM Related under t = 0
+utility.1[, 2, 1] <- dec.rate*utility.1[1, 1, 1] # Stroke-HCM Related under t = 1
 
 for (i in 1:n.sims) {
   for (j in 2:tmax) {
@@ -199,10 +197,10 @@ Qal.0 <- Qal.1 <- matrix(NA, n.sims, tmax)
 for (i in 1:n.sims) {
   for (j in 1:tmax) {
     Qal.0[i, j] <- (m.0[i, 1, j] %*% utility.0[i, 1, j] +
-                      m.0[i, 2, j] %*% utility.0[i, 2, j])/m.0[1, 1, 1]
+                    m.0[i, 2, j] %*% utility.0[i, 2, j])/m.0[1, 1, 1] ##TODO: why this denominator?
     
     Qal.1[i, j] <- (m.1[i, 1, j] %*% utility.1[i, 1, j] +
-                      m.1[i, 2, j] %*% utility.1[i, 2, j])/m.1[1, 1, 1]
+                    m.1[i, 2, j] %*% utility.1[i, 2, j])/m.1[1, 1, 1]
   }
 }
 
@@ -216,19 +214,25 @@ eff[, 2, ] <- apply(Qal.1, 1, sum)
 unit.cost.0 <- c(4792, 22880)       # Healthy, Stroke
 unit.cost.1 <- c(4812, 22880) 
 
-# Create a holding cost variable to track yearly (j > 0) accumulated cost under each treatment
+# Create holding cost to track yearly (j > 0) accumulated cost under each treatment
 cost.0 <- cost.1 <- matrix(NA, n.sims, tmax)
 
 for (i in 1:n.sims) {
   for (j in 2:(tmax + 1)) {
     
-    cost.0[i, j - 1] <-
-      (m.0[i, S, j] + m.0[i, S - 1, j])*(unit.cost.0 %*% m.0[i, 1:(S-2), j])/sum(m.0[i, 1:(S-2), j]) +
-      unit.cost.0 %*% m.0[i,1:(S-2),j]
+    c_nondead <- unit.cost.0 %*% m.0[i, 1:2, j]
+    pop_nondead <- sum(m.0[i, 1:2, j])
+    pop_dead <- sum(m.0[i, 3:4, j])
+    mean_c_nondead <- c_nondeath/pop_nondead
     
+    ##TODO: why add dead cost in this way?...
+    cost.0[i, j - 1] <- (pop_dead * mean_c_nondead) + c_nondead
+      
+    
+    ##TODO: should this be m.1?
     cost.1[i, j - 1] <-
-      (m.0[i, S, j] + m.0[i, S - 1, j])*(unit.cost.1 %*% m.0[i, 1:(S-2), j])/sum(m.0[i, 1:(S-2), j]) +
-      unit.cost.1 %*% m.0[i, 1:(S-2), j]
+      sum(m.0[i, 3:4, j])*(unit.cost.1 %*% m.0[i, 1:2, j])/sum(m.0[i, 1:2, j]) +
+      unit.cost.1 %*% m.0[i, 1:2, j]
   }
 }
 
