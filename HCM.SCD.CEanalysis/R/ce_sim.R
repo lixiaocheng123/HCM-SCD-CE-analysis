@@ -6,7 +6,7 @@
 #' @param c_unit Unit costs per state
 #' @param e_unit Health unit values per state
 #' @param pdecr Linear utility decrease per state
-#' @param delta Discount rate
+#' @param delta Discount rate; default 3.5\%
 #' @importFrom purrr map
 #'
 #' @export

@@ -1,5 +1,5 @@
 
-#' Create initial population
+#' Create initial state population
 #'
 #' @param pop Number of individuals [state, time, n_sim]
 #' @param n_sim Number of simulations (from jags)

@@ -7,8 +7,7 @@ library(dplyr)
 library(purrr)
 library(BCEA)
 library(reshape2)
-
-source("functions.R")
+library(HCM.SCD.CEanalysis)
 
 
 # 1. healthy
@@ -60,7 +59,7 @@ res <-
 c <- map_dfc(res$cost, rowSums) %>% as.matrix()
 e <- map_dfc(res$eff, rowSums) %>% as.matrix()
 
-labels <- c("status-quo","ICD")
+labels <- c("status-quo", "ICD")
 
 m <- bcea(e, c,
           ref = 2,

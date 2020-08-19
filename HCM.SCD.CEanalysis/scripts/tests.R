@@ -1,5 +1,5 @@
 
-# main_analysis.R
+# tests.R
 # N Green
 
 
@@ -7,8 +7,7 @@ library(dplyr)
 library(purrr)
 library(BCEA)
 library(reshape2)
-
-source("functions.R")
+library(HCM.SCD.CEanalysis)
 
 
 n_init <- c(1, 0)
@@ -39,7 +38,7 @@ res <-
 c <- map_dfc(res$cost, rowSums) %>% as.matrix()
 e <- map_dfc(res$eff, rowSums) %>% as.matrix()
 
-labels <- c("FP","SFC")
+labels <- c("FP", "SFC")
 
 m <- bcea(e, c,
           ref = 2,
