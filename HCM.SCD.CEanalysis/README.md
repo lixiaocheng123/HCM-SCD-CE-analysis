@@ -4,4 +4,4 @@ A predictive model for assessing risk of SCD among patients with HCM using BUGS 
 
 The model structure consists of a decision tree component and a Markov model component.
 
-![](model_diagram.PNG)
+![](images/model_diagram.PNG)
