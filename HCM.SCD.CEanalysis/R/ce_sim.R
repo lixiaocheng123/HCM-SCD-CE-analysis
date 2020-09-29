@@ -1,12 +1,15 @@
 
 #' Markov model cost-effectiveness simulation
 #'
-#' @param pop Number of individuals
-#' @param probs Transition probabilities
-#' @param c_unit Unit costs per state
-#' @param e_unit Health unit values per state
+#' @param pop Number of individuals. List-matrix [[n_int]] n_sim x time
+#' @param probs Transition probabilities. List-array [[n_int]] states x states x time x sim
+#' @param c_unit Unit costs per state. List [[n_int]]
+#' @param e_unit Health unit values per state. List [[n_int]]
 #' @param pdecr Linear utility decrease per state
-#' @param delta Discount rate; default 3.5\%
+#' @param delta Discount rate; default 3.5\% as 0.035
+#' @return List
+#' @seealso [init_pop()]
+#'
 #' @importFrom purrr map
 #'
 #' @export
@@ -72,3 +75,4 @@ ce_sim <- function(pop,
        eff = eff,
        deff = deff)
 }
+

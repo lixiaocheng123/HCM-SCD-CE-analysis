@@ -5,6 +5,8 @@
 #' @param n_sim Number of simulations (from jags)
 #' @param tmax Time horizon
 #' @param n_interv Number of interventions, including status-quo
+#' @return List [[interv]] state x time x sim
+#' @seealso [ce_sim()]
 #'
 #' @export
 #'

@@ -1,4 +1,5 @@
 
+# Markov model
 # main_analysis.R
 # N Green
 
@@ -40,7 +41,7 @@ probs <- list(array(c(0.90, 0.075, 0.025,
                     dim = c(S, S, 1, n_sim)))
 
 # rearrange because array() fills by column
-probs <- map(probs, aperm, perm = c(2,1,3,4))
+probs <- map(probs, aperm, perm = c(2, 1, 3, 4))
 
 ## run Markov model
 res <-
@@ -50,9 +51,8 @@ res <-
          e_unit,
          pdecr)
 
-
+##TODO:
 # covariate-dependent transition probs?
-#
 # c_unit, e_unit samples?
 
 
@@ -67,3 +67,4 @@ m <- bcea(e, c,
           ref = 2,
           interventions = labels,
           Kmax = 300)
+

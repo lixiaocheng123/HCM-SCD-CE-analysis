@@ -1,0 +1,29 @@
+model {
+
+  # m1. Multinomial distribution for r, Dirichlet prior for lambda
+
+  for(s in 1:3){
+    r.0[s, 1:S] ~ dmulti(lambda.0[s, 1:S], n.0[s])
+    r.1[s, 1:S] ~ dmulti(lambda.1[s, 1:S], n.1[s])
+
+    lambda.0[s, 1:S] ~ ddirch(alpha.0[1:S])
+    lambda.1[s, 1:S] ~ ddirch(alpha.1[1:S])
+  }
+
+  # m2. Dirichlet prior for the non-observed state (Hex)
+
+  lambda.0[4, 1:S] ~ ddirch(alpha.0[1:S])
+  lambda.1[4, 1:S] ~ ddirch(alpha.1[1:S])
+
+  # m3. Deterministic values for the absorbent state (TP)
+
+  for (s in 1:4) {
+    lambda.0[S, s] <- 0
+    lambda.1[S, s] <- 0
+  }
+
+  lambda.0[S, S] <- 1
+  lambda.1[S, S] <- 1
+}
+
+
