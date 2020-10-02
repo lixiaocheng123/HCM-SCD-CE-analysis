@@ -1,34 +1,18 @@
 
-# prep individual level data
-# to use in BUGS model
+# HCM SCD risk prediction:
+# prep individual level data to use in BUGS model
 # N Green
+#
+# the individual-level dataset is split into those who
+# are given the intervention (ICD) and those who are not
+# for different decision rules.
+#
+# the individual data are then summed into annual counts
+# from the health state.
+#
+# then aggregated across some time horizon and formatted
+# as a transition matrix
 
-
-#' aggregate individual data to annual totals
-#'
-annual_trans_counts <- function(data,
-                                cycle_length = 1) {
-
-  n_pop <- nrow(data)
-
-  data %>%
-    # create combined non-scd field
-    mutate(
-      non_scd = as.numeric((cvs_all & !scd) | non_cvs)) %>%
-    select(time, non_scd, scd) %>%
-    mutate(yr_grp = cut(time,
-                        breaks = seq(0, 35, by = cycle_length),
-                        right = FALSE)) %>%
-    group_by(yr_grp) %>%
-    summarise(scd_count = sum(scd),
-              non_scd_count = sum(non_scd)) %>%
-    mutate(cum_scd = cumsum(scd_count),
-           cum_non_scd = cumsum(non_scd_count),
-           healthy = n_pop - cum_scd - cum_non_scd,
-           at_risk = lag(healthy, default = n_pop))
-}
-
-# -------------------------------------------------------------------------
 
 library(haven)
 library(dplyr)
@@ -41,6 +25,8 @@ data_set1 <- mydata %>% filter(set == 1)
 
 save(data_set1, file = "data/data_set1.RData")
 CYCLE <- 1
+
+# non-deterministic decision
 fuzzy_risk_noise <- rnorm(nrow(data_set1), 0, 0.001)
 
 # cox risk score > 6% ----
@@ -52,7 +38,8 @@ data_risk6 <-
   group_split(data_set1, risk_over_6) %>%
   setNames(levels(data_set1$risk_over_6)) %>%
   map(.f = annual_trans_counts,
-      cycle_length = CYCLE)
+      cycle_length = CYCLE) %>%
+  map(.f = obs_aggr_trans_mat)
 
 data_risk6
 

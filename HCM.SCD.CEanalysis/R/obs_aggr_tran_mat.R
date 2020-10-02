@@ -1,7 +1,7 @@
 
 #' obs_aggr_tran_mat
 #'
-#' create aggregate observed transition counts
+#' Create aggregate observed transition counts
 #' see Table 5.2 chapter 5 in BCEA book
 #'
 #' @param data new state arrivals at time step
@@ -19,7 +19,7 @@ obs_aggr_tran_mat <- function(data,
           c(0,0,0)) %>%
     `colnames<-`(state_names)
 
-  for (i in 1:max_year) {
+  for (i in seq_len(max_year)) {
 
     trans_mat[[i + 1]] <-
       trans_mat[[i]] +
@@ -32,11 +32,9 @@ obs_aggr_tran_mat <- function(data,
   }
 
   names(trans_mat) <- c(0:max_year)
+  trans_mat_total <- trans_mat[[as.character(max_year)]]
 
-  cbind(
-    trans_mat[[as.character(max_year)]],
-    n =
-      rowSums(
-        trans_mat[[as.character(max_year)]]))
+  cbind(trans_mat_total,
+        n = rowSums(trans_mat_total))
 }
 
