@@ -35,6 +35,8 @@ obs_aggr_tran_mat <- function(data,
 
   cbind(
     trans_mat[[as.character(max_year)]],
-    n = rowSums(trans_mat[[as.character(max_year)]]))
+    n =
+      rowSums(
+        trans_mat[[as.character(max_year)]]))
 }
 

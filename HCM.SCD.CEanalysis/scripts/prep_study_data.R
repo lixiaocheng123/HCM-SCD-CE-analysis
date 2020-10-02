@@ -40,17 +40,19 @@ mydata <- read_dta("raw data/hcmdata.dta")
 data_set1 <- mydata %>% filter(set == 1)
 
 save(data_set1, file = "data/data_set1.RData")
-
+CYCLE <- 1
+fuzzy_risk_noise <- rnorm(nrow(data_set1), 0, 0.001)
 
 # cox risk score > 6% ----
 
-data_set1$risk_over_6 <- as.factor(data_set1$risk_5_years > 0.06)
+data_set1$risk_over_6 <-
+  as.factor((data_set1$risk_5_years + fuzzy_risk_noise) > 0.06)
 
 data_risk6 <-
   group_split(data_set1, risk_over_6) %>%
   setNames(levels(data_set1$risk_over_6)) %>%
   map(.f = annual_trans_counts,
-      cycle_length = 5)
+      cycle_length = CYCLE)
 
 data_risk6
 
@@ -58,13 +60,14 @@ save(data_risk6, file = "data/data_risk6.RData")
 
 # cox risk score > 4% ----
 
-data_set1$risk_over_4 <- as.factor(data_set1$risk_5_years > 0.04)
+data_set1$risk_over_4 <-
+  as.factor((data_set1$risk_5_years + fuzzy_risk_noise) > 0.04)
 
 data_risk4 <-
   group_split(data_set1, risk_over_4) %>%
   setNames(levels(data_set1$risk_over_4)) %>%
   map(.f = annual_trans_counts,
-      cycle_length = )
+      cycle_length = CYCLE)
 
 data_risk4
 
@@ -77,6 +80,8 @@ save(data_risk4, file = "data/data_risk4.RData")
 # fhxscd: family history of SCD
 # syncope: unexplained syncope
 #
+# no noise on decision
+#
 data_set1 <-
   data_set1 %>%
   mutate(num_rf = mwt30 + nsvt + fhxscd + syncope,
@@ -86,7 +91,7 @@ data_rule <-
   group_split(data_set1, rule_icd) %>%
   setNames(unique(data_set1$rule_icd)) %>%
   map(.f = annual_trans_counts,
-      cycle_length = 5)
+      cycle_length = CYCLE)
 
 data_rule
 
@@ -99,7 +104,7 @@ data_obs <-
   group_split(data_set1, icd) %>%
   setNames(unique(data_set1$icd)) %>%
   map(.f = annual_trans_counts,
-      cycle_length = 5)
+      cycle_length = CYCLE)
 
 data_obs
 
