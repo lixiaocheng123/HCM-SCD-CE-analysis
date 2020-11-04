@@ -1,3 +1,8 @@
+---
+output: 
+  html_document: 
+    keep_md: yes
+---
 ## Bayesian Models for CE Analysis of a Prognostic Model for Sudden Cardiac Death (SCD) in Hypertrophic Cardiomyopathy (HCM)
 
 ### Background
@@ -24,6 +29,8 @@ The model structure consists of a decision tree component and a Markov model com
 
 Individual HCM patient level data.
 
+| Variable     | Description                                                                  |
+---------------|-------------------------------------------------------------------------------
 | set          | "Imputed dataset"                                                            |
 | centre       | "Centre"                                                                     |
 | id           | "ID"                                                                         |
