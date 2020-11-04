@@ -24,6 +24,7 @@ mydata <- read_dta("raw data/hcmdata.dta")
 data_set1 <- mydata %>% filter(set == 1)
 
 save(data_set1, file = "data/data_set1.RData")
+
 CYCLE <- 1
 
 # non-deterministic decision

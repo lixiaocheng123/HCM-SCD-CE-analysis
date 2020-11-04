@@ -24,6 +24,8 @@ The model structure consists of a decision tree component and a Markov model com
 
 Individual HCM patient level data.
 
+| Variable     | Description                                                                  |
+---------------|-------------------------------------------------------------------------------
 | set          | "Imputed dataset"                                                            |
 | centre       | "Centre"                                                                     |
 | id           | "ID"                                                                         |
