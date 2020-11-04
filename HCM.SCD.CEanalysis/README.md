@@ -2,7 +2,7 @@
 
 A predictive model for assessing risk of SCD among patients with HCM
 
-* Using individual level data generate posterior distibution samples of probabilities, costs and health values using WinBUGS
+* Using individual level data generate posterior distribution samples of probabilities, costs and health values using WinBUGS
 * Simulate with a Markov model using the posterior samples as inputs
 * Compare outcomes for risk groups in terms of cost-effectiveness
 

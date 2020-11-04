@@ -1,7 +1,7 @@
 
 #' annual_trans_counts
 #'
-#' aggregate individual data to annual totals
+#' Aggregate individual data to annual totals.
 #'
 annual_trans_counts <- function(data,
                                 cycle_length = 1) {

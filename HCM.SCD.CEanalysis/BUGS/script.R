@@ -29,7 +29,10 @@ scale <- 1                            # level of informativeness for
 alpha.0 <- alpha.1 <- rep(scale, n_S) # the Dirichlet prior
 
 dataJags <-
-  list("n.0", "n.1", "r.0", "r.1", "alpha.0", "alpha.1", "n_S")
+  list("n.0", "n.1",
+       "r.0", "r.1",
+       "alpha.0", "alpha.1",
+       "n_S")
 
 filein <- "model.txt"
 params <- c("lambda.0", "lambda.1")
@@ -57,6 +60,7 @@ inits <- function() {
 n.iter <- 10000
 n.burnin <- 5000
 n.thin <- floor((n.iter - n.burnin)/500)
+
 mm1 <-
   jags(dataJags,
        inits,
@@ -68,6 +72,6 @@ mm1 <-
        n.thin,
        DIC = TRUE)
 
-print(mm1, digits = 3,intervals = c(0.025, 0.975))
+print(mm1, digits = 3, intervals = c(0.025, 0.975))
 attach.bugs(mm1$BUGSoutput)
 

@@ -1,6 +1,6 @@
 model {
 
-  # multinomial distribution for r
+  # multinomial distribution for R
   # Dirichlet prior for lambda
 
   for(s in 1:3){

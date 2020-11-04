@@ -1,7 +1,7 @@
 
 #' Create initial state population
 #'
-#' @param pop Number of individuals [state, time, n_sim]
+#' @param pop Number of individuals (state, time, n_sim)
 #' @param n_sim Number of simulations (from jags)
 #' @param tmax Time horizon
 #' @param n_interv Number of interventions, including status-quo
