@@ -41,7 +41,7 @@ Individual HCM patient level data.
 | mwt2         | "mwt^2"                                                                      |
 | la           | "Left atrial size (mm)"                                                      |
 | maxlvotg     | "Maximal LVOT gradient (mmHg)"                                               |
-| fhxscd       | "Family histroy of SCD"                                                      |
+| fhxscd       | "Family history of SCD"                                                      |
 | nsvt         | "Non Sustained Ventricular Tachycardia"                                      |
 | syncope      | "Syncope (blackout)"                                                         |
 | na           | "Nelson-Aalen cumulative hazard"                                             |

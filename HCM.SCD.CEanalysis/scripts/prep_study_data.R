@@ -30,13 +30,15 @@ CYCLE <- 1
 # non-deterministic decision
 fuzzy_risk_noise <- rnorm(nrow(data_set1), 0, 0.001)
 
+
 # cox risk score > 6% ----
 
 data_set1$risk_over_6 <-
   as.factor((data_set1$risk_5_years + fuzzy_risk_noise) > 0.06)
 
 data_risk6 <-
-  group_split(data_set1, risk_over_6) %>%
+  data_set1 %>%
+  group_split(risk_over_6) %>%
   setNames(levels(data_set1$risk_over_6)) %>%
   map(.f = annual_trans_counts,
       cycle_length = CYCLE) %>%
