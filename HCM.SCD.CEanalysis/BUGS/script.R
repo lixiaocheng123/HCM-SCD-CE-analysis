@@ -9,16 +9,25 @@
 
 library(R2jags)
 
-# select:
 data("trans_counts_obs")
 data("trans_counts_risk6")
 
 
-n_S <- 3  # number of states
-J <- 5    # number of time points
+# combine low and high risk
+# into single transition matrix
+empty_mat <- matrix(rep(0,9), nrow = 3)
 
-r.0 <- data_obs$`0`[, c("healthy", "scd_count", "non_scd_count")]
-r.1 <- data_obs$`1`[, c("healthy", "scd_count", "non_scd_count")]
+r.0 <-
+  rbind(
+    cbind(data_obs[[1]][,-4], empty_mat),
+    cbind(empty_mat, data_obs[[2]][,-4]))
+
+r.1 <-
+  rbind(
+    cbind(data_risk6[[1]][, -4], empty_mat),
+    cbind(empty_mat, data_risk6[[2]][, -4]))
+
+n_S <- 6  # number of states
 
 n.0 <- unname(rowSums(r.0))
 n.1 <- unname(rowSums(r.1))
@@ -57,8 +66,6 @@ inits <- function() {
                         rep(NA, n_S)))
 }
 
-inits()
-
 n.iter <- 10000
 n.burnin <- 5000
 n.thin <- floor((n.iter - n.burnin)/500)
@@ -76,14 +83,9 @@ mm1 <-
 
 R2WinBUGS::attach.bugs(mm1$BUGSoutput)
 
-#select:
-save(mm1, file = "data/jags_obs.RData")
-saveRDS(lambda.0, file = "data/lambda0_obs.Rds")
-saveRDS(lambda.1, file = "data/lambda1_obs.Rds")
-
-save(mm1, file = "data/jags_risk6.RData")
-saveRDS(lambda.0, file = "data/lambda0_risk6.Rds")
-saveRDS(lambda.1, file = "data/lambda1_risk6.Rds")
+save(mm1, file = "data/jags_output.RData")
+saveRDS(lambda.0, file = "data/lambda0.Rds")
+saveRDS(lambda.1, file = "data/lambda1.Rds")
 
 # print(mm1, digits = 3, intervals = c(0.025, 0.975))
 
