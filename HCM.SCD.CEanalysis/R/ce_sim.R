@@ -28,7 +28,7 @@ ce_sim <- function(pop,
   n_sim <- dim(pop[[1]])[3]
   n_interv <- length(pop)
 
-  if (is.na(pdecr)) {
+  if (any(is.na(pdecr))) {
     pdecr <- map(1:n_interv, ~rep(0, S))}
 
   # initialise empty output matrices
