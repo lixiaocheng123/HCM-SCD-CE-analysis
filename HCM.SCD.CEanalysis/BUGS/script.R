@@ -2,6 +2,10 @@
 # run BUGS model script
 # cf BCEA book chapter 5
 #
+# estimate transition probabilities
+# from discrete time counts
+# using multinomial likelihood
+
 
 
 library(R2jags)

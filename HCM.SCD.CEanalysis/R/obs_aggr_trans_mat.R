@@ -25,17 +25,20 @@ obs_aggr_trans_mat <- function(data,
 
   for (i in seq_len(max_year)) {
 
-    trans_mat[[i + 1]] <-
-      # previous transitions
-      trans_mat[[i]] +
-      # new transitions
-      rbind(data[i, state_names],
-            c(0,0,0),
-            c(0,0,0)) +
-      # absorbing states
-      diag(c(0,
-             trans_mat[[i]]["healthy", "scd_count"],
-             trans_mat[[i]]["healthy", "non_scd_count"]))
+    trans_mat[[i + 1]] <- trans_mat[[i]]
+
+    # new transitions
+      trans_mat[[i + 1]]["healthy", state_names] <-
+        trans_mat[[i + 1]]["healthy", state_names] +
+        unlist(data[i, state_names])
+
+      trans_mat[[i + 1]]["scd_count", "scd_count"] <-
+      trans_mat[[i + 1]]["scd_count", "scd_count"] +
+        trans_mat[[i]]["healthy", "scd_count"]
+
+      trans_mat[[i + 1]]["non_scd_count", "non_scd_count"] <-
+      trans_mat[[i + 1]]["non_scd_count", "non_scd_count"] +
+        trans_mat[[i]]["healthy", "non_scd_count"]
   }
 
   names(trans_mat) <- c(0:max_year)

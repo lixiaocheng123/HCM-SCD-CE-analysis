@@ -18,23 +18,28 @@ library(haven)
 library(dplyr)
 library(purrr)
 
-mydata <- read_dta("raw data/hcmdata.dta")
+## STATA data
+# mydata <- read_dta("raw data/hcmdata.dta")
+# # single imputed data set
+# data_set1 <- mydata %>% filter(set == 1)
+# save(data_set1, file = "data/data_set1.RData")
 
-# single imputed data set
-data_set1 <- mydata %>% filter(set == 1)
+data("data_set1")
 
-save(data_set1, file = "data/data_set1.RData")
+CYCLE <- 1 #year
 
-CYCLE <- 1
+# non-deterministic decision rule
+FUZZY_RISK <- TRUE
 
-# non-deterministic decision
-fuzzy_risk_noise <- rnorm(nrow(data_set1), 0, 0.001)
-
+fuzzy_noise <-
+  if (FUZZY_RISK) {
+    rnorm(nrow(data_set1), 0, 0.001)
+  } else {0}
 
 # cox risk score > 6% ----
 
 data_set1$risk_over_6 <-
-  as.factor((data_set1$risk_5_years + fuzzy_risk_noise) > 0.06)
+  as.factor((data_set1$risk_5_years + fuzzy_noise) > 0.06)
 
 data_risk6 <-
   data_set1 %>%
@@ -46,22 +51,23 @@ data_risk6 <-
 
 data_risk6
 
-save(data_risk6, file = "data/data_risk6.RData")
+save(data_risk6, file = "data/trans_counts_risk6.RData")
 
 # cox risk score > 4% ----
 
 data_set1$risk_over_4 <-
-  as.factor((data_set1$risk_5_years + fuzzy_risk_noise) > 0.04)
+  as.factor((data_set1$risk_5_years + fuzzy_noise) > 0.04)
 
 data_risk4 <-
   group_split(data_set1, risk_over_4) %>%
   setNames(levels(data_set1$risk_over_4)) %>%
   map(.f = annual_trans_counts,
-      cycle_length = CYCLE)
+      cycle_length = CYCLE) %>%
+  map(.f = obs_aggr_trans_mat)
 
 data_risk4
 
-save(data_risk4, file = "data/data_risk4.RData")
+save(data_risk4, file = "data/trans_counts_risk4.RData")
 
 # status-quo as risk factor rule ----
 #
@@ -71,21 +77,24 @@ save(data_risk4, file = "data/data_risk4.RData")
 # syncope: unexplained syncope
 #
 # no noise on decision
-#
+
+rf_threshold <- 1
+
 data_set1 <-
   data_set1 %>%
   mutate(num_rf = mwt30 + nsvt + fhxscd + syncope,
-         rule_icd = num_rf > 1)
+         rule_icd = num_rf > rf_threshold)
 
 data_rule <-
   group_split(data_set1, rule_icd) %>%
   setNames(unique(data_set1$rule_icd)) %>%
   map(.f = annual_trans_counts,
-      cycle_length = CYCLE)
+      cycle_length = CYCLE) %>%
+  map(.f = obs_aggr_trans_mat)
 
 data_rule
 
-save(data_rule, file = "data/data_rule.RData")
+save(data_rule, file = "data/trans_counts_rule.RData")
 
 
 # status-quo as what _actually_ happens ----
@@ -94,9 +103,10 @@ data_obs <-
   group_split(data_set1, icd) %>%
   setNames(unique(data_set1$icd)) %>%
   map(.f = annual_trans_counts,
-      cycle_length = CYCLE)
+      cycle_length = CYCLE) %>%
+  map(.f = obs_aggr_trans_mat)
 
 data_obs
 
-save(data_obs, file = "data/data_obs.RData")
+save(data_obs, file = "data/trans_counts_obs.RData")
 
