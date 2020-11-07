@@ -15,19 +15,22 @@ data("trans_counts_risk6")
 
 # combine low and high risk
 # into single transition matrix
-empty_mat <- matrix(rep(0,9), nrow = 3)
+# pad with 0s
+empty_mat <- matrix(0,
+                    nrow = nrow(data_obs),
+                    ncol = ncol(data_obs))
 
 r.0 <-
   rbind(
-    cbind(data_obs[[1]][,-4], empty_mat),
-    cbind(empty_mat, data_obs[[2]][,-4]))
+    cbind(data_obs[[1]][, -4], empty_mat),
+    cbind(empty_mat, data_obs[[2]][, -4]))
 
 r.1 <-
   rbind(
     cbind(data_risk6[[1]][, -4], empty_mat),
     cbind(empty_mat, data_risk6[[2]][, -4]))
 
-n_S <- 6  # number of states
+n_S <- nrow(r.0)  # number of states
 
 n.0 <- unname(rowSums(r.0))
 n.1 <- unname(rowSums(r.1))
@@ -50,20 +53,25 @@ params <- c("lambda.0", "lambda.1")
 #
 inits <- function() {
 
-  temp.0 <- rgamma(n_S, scale, 1)
-  sum.temp.0 <- sum(temp.0)
-  p.0 <- temp.0/sum.temp.0
+  matgam.0 <- matrix(rgamma(2*n_S, scale, 1), nrow = 2)
+  sum.matgam.0 <- rowSums(matgam.0)
+  p.0 <- matgam.0/sum.matgam.0
 
-  temp.1 <- rgamma(n_S, scale, 1)
-  sum.temp.1 <- sum(temp.1)
-  p.1 <- temp.1/sum.temp.1
+  matgam.1 <- matrix(rgamma(2*n_S, scale, 1), nrow = 2)
+  sum.matgam.1 <- rowSums(matgam.1)
+  p.1 <- matgam.1/sum.matgam.1
 
-  list(lambda.0 = rbind(p.0,
-                        rep(NA, n_S),
-                        rep(NA, n_S)),
-       lambda.1 = rbind(p.1,
-                        rep(NA, n_S),
-                        rep(NA, n_S)))
+  low_risk <-
+    rbind(p.0,
+          matrix(NA, ncol = n_S, nrow = 4))
+
+  ICD <-
+    rbind(p.1,
+          matrix(NA, ncol = n_S, nrow = 4))
+
+  # rearrange rows
+  list(lambda.0 = low_risk[c(1,3,4,2,5,6), ],
+       lambda.1 = ICD[c(1,3,4,2,5,6), ])
 }
 
 n.iter <- 10000
