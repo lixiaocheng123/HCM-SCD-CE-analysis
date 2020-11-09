@@ -13,6 +13,9 @@
 # then aggregated across some time horizon and formatted
 # as a transition matrix
 
+##TODO: what period to take obs_aggr_trans_mat() over?
+##      at the moment 5 years only
+
 
 library(haven)
 library(dplyr)

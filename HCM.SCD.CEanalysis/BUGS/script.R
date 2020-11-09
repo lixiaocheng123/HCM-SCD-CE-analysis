@@ -17,18 +17,18 @@ data("trans_counts_risk6")
 # into single transition matrix
 # pad with 0s
 empty_mat <- matrix(0,
-                    nrow = nrow(data_obs),
-                    ncol = ncol(data_obs))
+                    nrow = nrow(data_obs$ICD),
+                    ncol = nrow(data_obs$ICD))
 
 r.0 <-
   rbind(
-    cbind(data_obs[[1]][, -4], empty_mat),
-    cbind(empty_mat, data_obs[[2]][, -4]))
+    cbind(data_obs$ICD[, -4], empty_mat),
+    cbind(empty_mat, data_obs$low_risk[, -4]))
 
 r.1 <-
   rbind(
-    cbind(data_risk6[[1]][, -4], empty_mat),
-    cbind(empty_mat, data_risk6[[2]][, -4]))
+    cbind(data_risk6$ICD[, -4], empty_mat),
+    cbind(empty_mat, data_risk6$low_risk[, -4]))
 
 n_S <- nrow(r.0)  # number of states
 
@@ -48,7 +48,7 @@ dataJags <-
        n_S = n_S)
 
 filein <- "BUGS/model.txt"
-params <- c("lambda.0", "lambda.1")
+params <- c("lambda.0", "lambda.1") #probabilities
 
 #
 inits <- function() {

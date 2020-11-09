@@ -10,7 +10,7 @@
 #' @export
 #'
 obs_aggr_trans_mat <- function(data,
-                               max_year = 5) {
+                               max_year = 20) {
 
   trans_mat <- list()
   state_names <- c("healthy", "scd_count", "non_scd_count")

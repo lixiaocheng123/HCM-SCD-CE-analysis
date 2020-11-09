@@ -17,33 +17,18 @@ model {
 
   # deterministic values for absorbent states
 
-  for (i in 1:3) {
-    for (j in 4:6) {
-      lambda.0[i, j] <- 0
-      lambda.1[i, j] <- 0
-
-      lambda.0[j, i] <- 0
-      lambda.1[j, i] <- 0
+  for (i in 2:3) {
+    for (j in 1:6) {
+      lambda.0[i, j] <- equals(i, j)
+      lambda.1[i, j] <- equals(i, j)
+    }
   }
 
-  for (i in 1:2) {
-
-    j <- 3*(i - 1)
-
-    lambda.0[2 + j, 1 + j] <- 0
-    lambda.0[2 + j, 3 + j] <- 0
-    lambda.0[3 + j, 1 + j] <- 0
-    lambda.0[3 + j, 2 + j] <- 0
-
-    lambda.1[2 + j, 1 + j] <- 0
-    lambda.1[2 + j, 3 + j] <- 0
-    lambda.1[3 + j, 1 + j] <- 0
-    lambda.1[3 + j, 2 + j] <- 0
-
-    lambda.0[2 + j, 2 + j] <- 1
-    lambda.1[2 + j, 2 + j] <- 1
-    lambda.0[3 + j, 3 + j] <- 1
-    lambda.1[3 + j, 3 + j] <- 1
+  for (i in 5:6) {
+    for (j in 1:6) {
+      lambda.0[i, j] <- equals(i, j)
+      lambda.1[i, j] <- equals(i, j)
+    }
   }
 }
 
