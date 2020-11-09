@@ -36,15 +36,24 @@ fuzzy_noise <-
     rnorm(nrow(data_set1), 0, 0.001)
   } else {0}
 
-# cox risk score > 6% ----
 
-data_set1$risk_over_6 <-
-  as.factor((data_set1$risk_5_years + fuzzy_noise) > 0.06)
+# subset cohort
+data_set1 <-
+  data_set1 %>%
+  mutate(risk_over_6 =
+           data_set1$risk_5_years + fuzzy_noise > 0.06,
+         risk_over_4 =
+           data_set1$risk_5_years + fuzzy_noise > 0.04)
+
+# cox risk score > 6% ----
 
 data_risk6 <-
   data_set1 %>%
-  group_split(risk_over_6) %>%
-  setNames(levels(data_set1$risk_over_6)) %>%
+  mutate(risk_status = ifelse(risk_over_6,
+                              yes = "ICD",
+                              no = "low_risk"),
+         risk_status = as.factor(risk_status)) %>%
+  split(.$risk_status) %>%
   map(.f = annual_trans_counts,
       cycle_length = CYCLE) %>%
   map(.f = obs_aggr_trans_mat)
@@ -55,12 +64,13 @@ save(data_risk6, file = "data/trans_counts_risk6.RData")
 
 # cox risk score > 4% ----
 
-data_set1$risk_over_4 <-
-  as.factor((data_set1$risk_5_years + fuzzy_noise) > 0.04)
-
 data_risk4 <-
-  group_split(data_set1, risk_over_4) %>%
-  setNames(levels(data_set1$risk_over_4)) %>%
+  data_set1 %>%
+  mutate(risk_status = ifelse(risk_over_4,
+                              yes = "ICD",
+                              no = "low_risk"),
+         risk_status = as.factor(risk_status)) %>%
+  split(.$risk_status) %>%
   map(.f = annual_trans_counts,
       cycle_length = CYCLE) %>%
   map(.f = obs_aggr_trans_mat)
@@ -86,8 +96,12 @@ data_set1 <-
          rule_icd = num_rf > rf_threshold)
 
 data_rule <-
-  group_split(data_set1, rule_icd) %>%
-  setNames(unique(data_set1$rule_icd)) %>%
+  data_set1 %>%
+  mutate(risk_status = ifelse(rule_icd,
+                              yes = "ICD",
+                              no = "low_risk"),
+         risk_status = as.factor(risk_status)) %>%
+  split(.$risk_status) %>%
   map(.f = annual_trans_counts,
       cycle_length = CYCLE) %>%
   map(.f = obs_aggr_trans_mat)
@@ -99,9 +113,14 @@ save(data_rule, file = "data/trans_counts_rule.RData")
 
 # status-quo as what _actually_ happens ----
 # i.e. observed ICD implants
+
 data_obs <-
-  group_split(data_set1, icd) %>%
-  setNames(unique(data_set1$icd)) %>%
+  data_set1 %>%
+  mutate(risk_status = ifelse(icd,
+                              yes = "ICD",
+                              no = "low_risk"),
+         risk_status = as.factor(risk_status)) %>%
+  split(.$risk_status) %>%
   map(.f = annual_trans_counts,
       cycle_length = CYCLE) %>%
   map(.f = obs_aggr_trans_mat)
