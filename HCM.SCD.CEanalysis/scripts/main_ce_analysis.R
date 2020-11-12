@@ -13,13 +13,25 @@ library(HCM.SCD.CEanalysis)
 data("jags_output")
 R2WinBUGS::attach.bugs(mm1$BUGSoutput)
 
-# 1. alive with HCM
-# 2. SCD
-# 3. all-cause mortality
+# individual patient data
+data("ipd_risk")
 
-#TODO: get proportions from dataset
-# pICD <-
-n_init <- c(500, 0, 0, 500, 0, 0)
+# 1. HCM with ICD
+# 2. shock
+# 3. all-cause mortality
+# 4. HCM
+# 5. SCD
+# 6. all-cause mortality
+
+# start state populations
+init_risk6 <- table(ipd_risk$risk_over_6)
+init_obs <- table(ipd_risk$icd)
+
+n_init <- list()
+n_init$obs <- c(init_obs["1"], 0, 0,         # ICD
+                init_obs["0"], 0, 0)         # low risk
+n_init$risk6 <- c(init_risk6["TRUE"], 0, 0,
+                  init_risk6["FALSE"], 0, 0)
 
 n_sim <- nrow(lambda.0)
 S <- length(n_init)

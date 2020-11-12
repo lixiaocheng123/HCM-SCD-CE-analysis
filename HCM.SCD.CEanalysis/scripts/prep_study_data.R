@@ -13,9 +13,6 @@
 # then aggregated across some time horizon and formatted
 # as a transition matrix
 
-##TODO: what periodl to take obs_aggr_trans_mat() over?
-##      at the moment 5 years only
-
 
 library(haven)
 library(dplyr)
@@ -41,17 +38,20 @@ fuzzy_noise <-
 
 
 # subset cohort
-data_set1 <-
+ipd_risk <-
   data_set1 %>%
   mutate(risk_over_6 =
            data_set1$risk_5_years + fuzzy_noise > 0.06,
          risk_over_4 =
            data_set1$risk_5_years + fuzzy_noise > 0.04)
 
+save(ipd_risk, file = "data/ipd_risk.RData")
+
+
 # cox risk score > 6% ----
 
 data_risk6 <-
-  data_set1 %>%
+  ipd_risk %>%
   mutate(risk_status = ifelse(risk_over_6,
                               yes = "ICD",
                               no = "low_risk"),
@@ -68,7 +68,7 @@ save(data_risk6, file = "data/trans_counts_risk6.RData")
 # cox risk score > 4% ----
 
 data_risk4 <-
-  data_set1 %>%
+  ipd_risk %>%
   mutate(risk_status = ifelse(risk_over_4,
                               yes = "ICD",
                               no = "low_risk"),
@@ -94,7 +94,7 @@ save(data_risk4, file = "data/trans_counts_risk4.RData")
 rf_threshold <- 1
 
 data_set1 <-
-  data_set1 %>%
+  ipd_risk %>%
   mutate(num_rf = mwt30 + nsvt + fhxscd + syncope,
          rule_icd = num_rf > rf_threshold)
 
@@ -118,7 +118,7 @@ save(data_rule, file = "data/trans_counts_rule.RData")
 # i.e. observed ICD implants
 
 data_obs <-
-  data_set1 %>%
+  ipd_risk %>%
   mutate(risk_status = ifelse(icd,
                               yes = "ICD",
                               no = "low_risk"),
