@@ -13,7 +13,7 @@
 # then aggregated across some time horizon and formatted
 # as a transition matrix
 
-##TODO: what period to take obs_aggr_trans_mat() over?
+##TODO: what periodl to take obs_aggr_trans_mat() over?
 ##      at the moment 5 years only
 
 

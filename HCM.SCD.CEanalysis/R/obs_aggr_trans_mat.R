@@ -4,6 +4,8 @@
 #' Create aggregate observed transition counts
 #' see p.185 Table 5.2 chapter 5 in BCEA book
 #'
+#' Assume 3 state model: "healthy", "scd_count", "non_scd_count"
+#'
 #' @param data new state arrivals at time step
 #'             e.g. data = data_rule$`FALSE`
 #' @param max_year
