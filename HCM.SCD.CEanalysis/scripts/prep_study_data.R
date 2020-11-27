@@ -38,12 +38,22 @@ fuzzy_noise <-
 
 
 # subset cohort
+rf_threshold <- 1
+
 ipd_risk <-
   data_set1 %>%
   mutate(risk_over_6 =
            data_set1$risk_5_years + fuzzy_noise > 0.06,
          risk_over_4 =
-           data_set1$risk_5_years + fuzzy_noise > 0.04)
+           data_set1$risk_5_years + fuzzy_noise > 0.04,
+         num_rf = mwt30 + nsvt + fhxscd + syncope,
+         rule_icd = num_rf > rf_threshold)
+
+# mwt30: max wall thickness
+# nsvt: NSVT
+# fhxscd: family history of SCD
+# syncope: unexplained syncope
+# no noise on decision
 
 save(ipd_risk, file = "data/ipd_risk.RData")
 
@@ -83,23 +93,9 @@ data_risk4
 save(data_risk4, file = "data/trans_counts_risk4.RData")
 
 # status-quo as risk factor rule ----
-#
-# mwt30: max wall thickness
-# nsvt: NSVT
-# fhxscd: family history of SCD
-# syncope: unexplained syncope
-#
-# no noise on decision
-
-rf_threshold <- 1
-
-data_set1 <-
-  ipd_risk %>%
-  mutate(num_rf = mwt30 + nsvt + fhxscd + syncope,
-         rule_icd = num_rf > rf_threshold)
 
 data_rule <-
-  data_set1 %>%
+  ipd_risk %>%
   mutate(risk_status = ifelse(rule_icd,
                               yes = "ICD",
                               no = "low_risk"),

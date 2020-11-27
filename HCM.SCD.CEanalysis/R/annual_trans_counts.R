@@ -29,6 +29,8 @@ annual_trans_counts <- function(data,
            cum_non_scd = cumsum(non_scd_count),
            cum_cens = cumsum(cens_count),
            healthy = n_pop - cum_cens - cum_scd - cum_non_scd,
-           at_risk = lag(healthy, default = n_pop))
+           at_risk0 = lag(healthy, default = n_pop),
+           # actuarial assumption
+           at_risk = round(at_risk0 - 0.5*cens_count, 0))
 }
 

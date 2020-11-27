@@ -29,7 +29,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Risk score algorithm details see [@mahony2014].
+Sudden cardiac death (SCD) risk score algorithm details see [@mahony2014].
 
 
 ## Data
@@ -43,23 +43,46 @@ If cost depend on the patient history then we may need to duplicate a state.
 
 Table 1 gives the unit cost and health values used in the model.
 
- Name | Value | Parameter | Source 
+ Name | Value$^*$ | Parameter | Source 
 ------|-------|-----------|--------
 | _Health_ ||||
 | Manage with ICD | 0.637 QALY/year | $h_1$ | Noyes 2007 |
-| Shock | ? utility losss | $h_2$ |  |
-| HCM | ? QALY/year | $h_3$ |  |
+| Shock | one-off and/or on-going? utility loss | $h_2$ |  |
+| HCM without ICD | < 1 ? QALY/year | $h_3$ |  |
 | Death | 0 QALY/year | $h_4$, $h_5$ |  |
 |       |      |      |     |
 | _Cost_ ||||
 | Manage with ICD | ? | $c_1$ |  |
+| Perform risk score | £20? |  |  |
+| Implant ICD | £4,666? |  | EY02B Tariffs |
+| Attention to ICD | £1,817? |  | EY10B Tariffs |
+| Testing ICD | £467? |  | Tariffs |
 | Non-fatal HCM event | £22,880 | $c_2$ | UK Stroke Assoc. |
-| HCM | ? | $c_3$ |  |
+| e.g shock? | one-off and/or on-going? | | |
+| HCM without ICD | ? | $c_3$ |  |
 | SCD | ? | $c_4$ |  |
 | All-cause death | ? | $c_5$ |  |
 |      |      |      |     |
 
-: Model parameter values.
+: Model parameter values. $^*$either one-off/on state entry or recurring. 
+
+Table 2 gives the starting state populations for non-zero states.
+
+Risk rule | State | Population
+----------|-------|-----------
+Observed  | HCM ICD | 559
+      -    | HCM | 3113
+Score > 4%| HCM ICD | 2561
+      -    | HCM | 1111
+Score > 6%| HCM ICD | 542
+      -    | HCM | 3130
+Risk factor >0| HCM ICD | 1785
+      -    | HCM | 1887
+Risk factor >1| HCM ICD | 481
+      -    | HCM | 3191
+Risk factor >2| HCM ICD | 78
+      -    | HCM | 3594
+
 
 
 ## Methods
@@ -68,7 +91,7 @@ The individual-level patient data are first stratified in to two groups for each
 These are
 
 -   Partition observed in data set
--   ICD given if number of risk factors \> 1, 2 or 3
+-   ICD given if number of risk factors \> 0, 1 or 2
 -   ICD given if risk score \>6%
 -   ICD given if risk score \>4%
 

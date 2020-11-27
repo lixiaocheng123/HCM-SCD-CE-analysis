@@ -41,8 +41,9 @@ r.1 <-
 n.0 <- unname(rowSums(r.0))
 n.1 <- unname(rowSums(r.1))
 
-scale <- 1                            # level of informativeness for
-alpha.0 <- alpha.1 <- rep(scale, 2*n_S) # the Dirichlet prior
+scale <- 1                                 # level of informativeness for
+alpha.0 <- c(rep(scale, n_S), rep(0, n_S)) # the Dirichlet prior
+alpha.1 <- c(rep(0, n_S), rep(scale, n_S)) # with structural zeros
 
 dataJags <-
   list(n.0 = n.0,
@@ -60,21 +61,36 @@ params <- c("lambda.0", "lambda.1") #probabilities
 #
 inits <- function() {
 
-  matgam.0 <- matrix(rgamma(2*2*n_S, scale, 1), nrow = 2)
-  sum.matgam.0 <- rowSums(matgam.0)
-  p.0 <- matgam.0/sum.matgam.0
+  matgam.0 <- matrix(rgamma(2*2*n_S, scale, 1),
+                     nrow = 2)
+  # prohibited transitions
+  matgam.0[1, (n_S+1):(2*n_S)] <- 0
+  matgam.0[2, 1:n_S] <- 0
 
-  matgam.1 <- matrix(rgamma(2*2*n_S, scale, 1), nrow = 2)
-  sum.matgam.1 <- rowSums(matgam.1)
+  sum.matgam.0 <- rowSums(matgam.0, na.rm = TRUE)
+
+  matgam.1 <- matrix(rgamma(2*2*n_S, scale, 1),
+                     nrow = 2)
+  # prohibited transitions
+  matgam.1[1, (n_S+1):(2*n_S)] <- 0
+  matgam.1[2, 1:n_S] <- 0
+
+  sum.matgam.1 <- rowSums(matgam.1, na.rm = TRUE)
+
+  p.0 <- matgam.0/sum.matgam.0
   p.1 <- matgam.1/sum.matgam.1
 
   obs_mat <-
     rbind(p.0,
-          matrix(NA, ncol = 2*n_S, nrow = 2*n_S - 2))
+          matrix(NA,
+                 ncol = 2*n_S,
+                 nrow = 2*n_S - 2))
 
   risk6_mat <-
     rbind(p.1,
-          matrix(NA, ncol = 2*n_S, nrow = 2*n_S - 2))
+          matrix(NA,
+                 ncol = 2*n_S,
+                 nrow = 2*n_S - 2))
 
   # rearrange rows
   new_order <- c(1,3,4,2,5,6)

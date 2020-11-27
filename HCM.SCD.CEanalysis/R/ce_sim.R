@@ -1,10 +1,11 @@
 
 #' Markov model cost-effectiveness simulation
 #'
-#' @param pop Number of individuals. List-matrix [[n_int]] n_sim x time
+#' @param pop Number of individuals. See `init_pop()`. List-matrix [[n_int]] n_sim x time
 #' @param probs Transition probabilities. List-array [[n_int]] states x states x time x sim
 #' @param c_unit Unit costs per state. List [[n_int]]
 #' @param e_unit Health unit values per state. List [[n_int]]
+#' @param c_init One-off initial state costs. List [[n_int]]
 #' @param pdecr Linear utility decrease per state
 #' @param delta Discount rate; default 3.5\% as 0.035
 #' @return List
@@ -18,6 +19,7 @@ ce_sim <- function(pop,
                    probs,
                    c_unit,
                    e_unit,
+                   c_init = NA,
                    pdecr = NA,
                    delta = 0.035) {
 
@@ -66,6 +68,12 @@ ce_sim <- function(pop,
         dcost[[k]][i, j] <- cost[[k]][i, j] / disc
         deff[[k]][i, j] <- eff[[k]][i, j] / disc
       }
+    }
+
+    if (!any(is.na(c_init))) {
+      # add one-off starting state costs
+      cost[[k]][, 1] <- dcost[[k]][, 1] <-
+        c_init[[k]] %*% pop[[k]][,1,1]
     }
   }
 
