@@ -1,0 +1,166 @@
+RE: HCM SCD model
+
+Flag for follow up.
+Pavlou, Menelaos
+Mon 01/02/2021 5:05 PM
+Hi Nathan,
+
+ 
+
+Regarding the QALY’s I attach the paper from Chen and O’Mahony  (Costas O’Mahony who is a co-author is the clinician I communicated with and whose reply is below)
+
+ 
+
+> I attach an editorial where you can find in the references
+
+> the limited data that exist for QALY in HCM with and
+
+> without an ICD. IS this what you are after?
+
+ 
+
+With regards to the costs Costas asks:
+
+ 
+
+> Are you interested of what the NHS pays the hospital
+
+> to treat the patient (irrespective of the brand of device,
+
+>complexity of admission etc)?
+
+ 
+
+I attach an excel file which I am planning to send to Costas with the hope that we will get some of the values filled in and/or confirmed.
+
+ 
+
+Finally, with respect to your latest draft and some questions you had earlier please see below some of my updated responses after looking the literature in a bit more detail during Christmas (see some additional files attached that may help) and having a chat with Rumana. If some of the questions are not answered, then it could a suitable question for Costas who might be able to help.
+
+ 
+
+Yes, I am planning to copy you in when I respond to Costas, so that you are kept in the loop and respond directly to Costas.
+
+ 
+
+For now, if you could check, edit, add whatever additional queries you may have and send me back the attached excel file that would be great!
+
+ 
+
+Thanks,
+
+Menelaos
+
+ 
+
+--------------------------------------------
+
+Dr Menelaos Pavlou
+
+Lecturer in Medical Statistics
+
+University College London
+
+Department of Statistical Science
+
+1-19 Torrington Place
+
+London, WC1E 7HB
+
+ 
+
+ 
+
+From: Green, Nathan <n.green@ucl.ac.uk>
+Sent: 09 November 2020 17:02
+To: Pavlou, Menelaos <m.pavlou@ucl.ac.uk>
+Cc: Baio, Gianluca <g.baio@ucl.ac.uk>
+Subject: HCM SDC cost-effectiveness work
+
+ 
+
+Hi Menelaos,
+
+ 
+
+How are you? So, I've implemented a first stab at the cost-effectiveness model. I've attached a very draft write-up of what I've done.
+
+ 
+
+In summary, I estimate distributions for the transition probabilities and simulate with a discrete state cohort model summing up costs and QALYs.
+
+ 
+
+I now need to nail down the structure and populate the cost and QALYs. Could you help with the following questions, please:
+
+I'm making pair comparisons between different strategies. Which ones should we look at? I presume theres one of these in the data (column "icd"). Is this the decision rule if the patient has more than a certain number of the 4 risk factors?
+THE MAIN GUIDELINE USED BY THE CARDIOLOGY SOCIETY IS RISK >=6% (HIGH-RISK GROUP) THEN IMPLANT ICD. WE ARE MAINLY INTERESTED TO SEE WHETHER THIS IS COST EFFECTIVE.
+
+THE ONLY PAIRWISE COMPARISON THAT WE WOULD BE INTERESTED IN, WOULD BE OUR GUIDELINE: IMPLANT IF RISK >=6% AGAINST ONE OF THE OLD GUIDELINES (2003/2011) . SEE ATTACHED ARTICLE FROM O’MAHONY (2011)
+
+THE MOST RECENT, 2011 GUIDELINES, DO NOT TALK ABOUT THE PRESENCE OF A PARTICULAR NUMBER OF FACTORS. O MAHONY ET AL SAY:
+
+ 
+
+“THE 2011 ACCF/AHA GUIDELINES RECOMMEND THAT AN ICD IS REASONABLE
+
+IN PATIENTS WITH FHSCD, SEVERE LVH OR UNEXPLAINED
+
+SYNCOPE, AND IN INDIVIDUALS WITH NSVT OR ABPRE IN THE PRESENCE
+
+OF OTHER RF.”
+
+ 
+
+I THINK IF WE ARE TO INCLUDE A PAIRWISE COMPARISON SHOULD BE BASED ON THIS ONE..
+
+Based on the original diagram you sent me, is this state model ok? What should we do with shock patients? Eg do they go back into the ICD state or are they in some other state?
+YES, THE STATE MODEL SEEMS IN LINE WITH WHAT WE ORIGINALLY DISCUSSED. JUST TO BE CLEAR ABOUT THE DATA, IN DEVELOPING THE MODEL AN APPROPRIATE ICD SHOCK WAS CONSIDERED AS EQUIVALENT TO A SUDDEN CARDIAC DEATH EVENT.
+
+SHOCK MAY BE APPROPRIATE OR INAPPROPRIATE. ~11% OF THE PATIENTS GET AN INAPPROPRIATE SHOCKS. NEED TO CROSS CHECK THIS.  IN OUR DATA WE DON’T HAVE INDIVIDUAL LEVEL DATA FOR INAPPROPRIATE SHOCKS.
+
+TO ASK COSTAS OMAHONY ONCE CLARIFIED WHAT WE NEED IN ADDITION AND WE CANNOT FIND
+
+What are the cost and QALYs for being in each state? I have a QALY value for ICD of 0.67 from a paper given to me. What is the non-ICD QALY? What is the shock health detriment? Is there a cost to shock (one-off or on-going)?
+WE DON’T KNOW – THESE HAVE TO BE RETRIEVED FROM EXISTING STUDIES.
+
+I MADE A QUICK SEARCH AND I ATTACH TWO  PAPERS (HOLBROOK 2020 AND THIJSSEN 2014) THAT MAY BE RELEVANT, BUT I DON’T HAVE READ THEM IN DETAIL YET. DO YOU THINK WE CAN USE SOME INFORMATION FROM THERE?   ICD COME WITH DRAWBACKS AND SOME ARE LISTED IN THE LINK BELOW.
+
+https://www.cardiomyopathy.org/hypertrophic-cardiomyopathy/assessing-risk-in-hypertrophic-cardiomyopathy
+
+SEE THE LATEST PAPER FROM CHEN, as suggested by Costas O’Mahony
+
+Are there on-going costs in the ICD and non-ICD healthy states? What are the on-off set-up cost?
+YES, BECAUSE THEY WILL BE MONITORED BY THE CLINICIANS. IS THERE A STANDARD CONSTING DONE?
+
+BUXTON 2006 PAPER ATTACHED – DISCUSS
+
+TO ASK COSTAS OMAHONY ONCE CLARIFIED WHAT WE NEED IN ADDITION AND WE CANNOT FIND
+
+What is the time horizon?
+WE HAVE NOT DISCUSSED THE TIME HORIZON SO FAR. THE RISK CUT-OFFS REFER TO THE 5-YEAR RISK OF SCD. SO, 5YEARS SHPOULD BE OK. DISCUSS HOW THIS MATTERS?
+
+Is an annual jump rate ok?
+I THINK THAT’S FINE. IF DUE TO THE RARITY OF THE EVENT WE NEED TO CONSIDER LONGER TIME JUMPS, THEN TWO-YEAR JUMP WOULD ENSURE THAT WE HAVE MORE EVENTS. DISCUSS
+
+I'm assuming we aren't including any covariates or time-dependent transitions?
+I AM NOT SURE I UNDERSTAND THIS VERY WELL. IF YOU MEAN TIME-DEPENDENT COVARIATES, THE ANSWER IS NO, BECAUSE A) WE HAVENT GOT THAT INFORMATION AND B) THE RISK MODEL WAS BUILT TO PREDICT THE RISK GIVEN CHARACTERISTICS AT BASELINE RATHER THAN TO GIVE DYNAMIC PREDICTIONS
+
+Whats the missing mechanism? Can we assume the end to follow up is independent to events?
+IF YOU ARE REFERRING TO THE MISSING DATA MECHANISM, THEN IN IMPUTING THE MISSING COVARIATE VALUES MISSING AT RANDOM WAS ASSUMED. IF, FOR THE SECOND YOU REFER TO THE CENSORING MECHANISM, THEN NON-INFORMATIVE CENSORING WAS ASSUMED AND SEEMS REASONABLE HERE.
+
+Happy to arrange a call if its easier to go through it.
+
+ 
+
+Thanks for the help,
+
+ 
+
+Nathan
+
+ 
+
+ 
+
+ 
