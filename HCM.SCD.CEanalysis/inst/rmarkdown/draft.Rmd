@@ -6,21 +6,7 @@ output: pdf_document
 editor_options: 
   markdown: 
     wrap: sentence
-references:
-- id: mahony2014
-  title: A novel clinical risk prediction model for sudden cardiac death in hypertrophic cardiomyopathy (HCM risk-SCD)
-  author:
-  - family: O'Mahony
-    given: C
-  container-title: Eur Heart
-  volume: 35
-  URL: 'https://pubmed.ncbi.nlm.nih.gov/24126876/'
-  DOI:
-  issue: 30
-  page: 2010-20
-  type: article-journal
-  issued:
-    year: 2014
+bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -29,8 +15,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Sudden cardiac death (SCD) risk score algorithm details see [@mahony2014].
+Sudden cardiac death (SCD) risk score algorithm details see [@OMahony2014].
 
+There have been previous cost-effectiveness analyses [@Magnusson2020; @Boriani2014; @Bryant2007; @Caro2007; @Cowie2009; @Garcia-Perez2015; @Mealing2016; @Sanders2005; @Smith2013]
 
 ## Data
 
@@ -43,47 +30,91 @@ If cost depend on the patient history then we may need to duplicate a state.
 
 Table 1 gives the unit cost and health values used in the model.
 
- Name | Value$^*$ | Parameter | Source 
-------|-------|-----------|--------
-| _Health_ ||||
-| Manage with ICD | 0.637 QALY/year | $h_1$ | Noyes 2007 |
-| Shock | one-off and/or on-going? utility loss | $h_2$ |  |
-| HCM without ICD | < 1 ? QALY/year | $h_3$ |  |
-| Death | 0 QALY/year | $h_4$, $h_5$ |  |
-|       |      |      |     |
-| _Cost_ ||||
-| Manage with ICD | ? | $c_1$ |  |
-| Perform risk score | £20? |  |  |
-| Implant ICD | £4,666? |  | EY02B Tariffs |
-| Attention to ICD | £1,817? |  | EY10B Tariffs |
-| Testing ICD | £467? |  | Tariffs |
-| Non-fatal HCM event | £22,880 | $c_2$ | UK Stroke Assoc. |
-| e.g shock? | one-off and/or on-going? | | |
-| HCM without ICD | ? | $c_3$ |  |
-| SCD | ? | $c_4$ |  |
-| All-cause death | ? | $c_5$ |  |
-|      |      |      |     |
++----------------------------------+-----------------+--------+------------------+
+| Description                      | Value$^*$       | Range  | Source           |
++==================================+=================+========+==================+
+| *Health*                         |                 |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Manage with ICD                  | 0.637 QALY/year |        | @Noyes2007       |
++----------------------------------+-----------------+--------+------------------+
+| Implantation procedure utility   | -0.016          |        | @Smith2013       |
++----------------------------------+-----------------+--------+------------------+
+| Shock utility                    | -0.5            |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| HCM without ICD                  | 1 QALY/year     |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Death                            | 0 QALY/year     |        |                  |
++----------------------------------+-----------------+--------+------------------+
+|                                  |                 |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| *Cost*                           |                 |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| ICD appointment                  | £10             |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Perform risk score               | £20?            |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Implant ICD                      | £4,666          |        | EY02B Tariffs    |
++----------------------------------+-----------------+--------+------------------+
+| Implant replacement              | £45,000         |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Implant complication             | £28,839         |        | @Smith2013       |
++----------------------------------+-----------------+--------+------------------+
+| Non-fatal shock                  | £22,880         |        | UK Stroke Assoc. |
++----------------------------------+-----------------+--------+------------------+
+| HCM without ICD                  | 0               |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| SCD                              | 0               |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| All-cause death                  | 0               |        |                  |
++----------------------------------+-----------------+--------+------------------+
+|                                  |                 |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| *Probabilities*                  |                 |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Initial implant complication     | 0.047           |        | @Smith2013       |
++----------------------------------+-----------------+--------+------------------+
+| Replacement implant complication | 0.032           |        | @Smith2013       |
++----------------------------------+-----------------+--------+------------------+
+|                                  |                 |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Time horizon                     | 12 years        |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Implant replacement              | 10 years        |        |                  |
++----------------------------------+-----------------+--------+------------------+
+| Annual number of appointments    | 2               |        |                  |
++----------------------------------+-----------------+--------+------------------+
 
-: Model parameter values. $^*$either one-off/on state entry or recurring. 
+: Model parameter values. $^*$either one-off/on state entry or recurring.
 
 Table 2 gives the starting state populations for non-zero states.
 
-Risk rule | State | Population
-----------|-------|-----------
-Observed  | HCM ICD | 559
-      -    | HCM | 3113
-Score > 4%| HCM ICD | 2561
-      -    | HCM | 1111
-Score > 6%| HCM ICD | 542
-      -    | HCM | 3130
-Risk factor >0| HCM ICD | 1785
-      -    | HCM | 1887
-Risk factor >1| HCM ICD | 481
-      -    | HCM | 3191
-Risk factor >2| HCM ICD | 78
-      -    | HCM | 3594
-
-
++-----------------+---------+------------+
+| Risk rule       | State   | Population |
++=================+=========+============+
+| Observed        | HCM ICD | 559        |
++-----------------+---------+------------+
+| \-              | HCM     | 3113       |
++-----------------+---------+------------+
+| Score \> 4%     | HCM ICD | 2561       |
++-----------------+---------+------------+
+| \-              | HCM     | 1111       |
++-----------------+---------+------------+
+| Score \> 6%     | HCM ICD | 542        |
++-----------------+---------+------------+
+| \-              | HCM     | 3130       |
++-----------------+---------+------------+
+| Risk factor \>0 | HCM ICD | 1785       |
++-----------------+---------+------------+
+| \-              | HCM     | 1887       |
++-----------------+---------+------------+
+| Risk factor \>1 | HCM ICD | 481        |
++-----------------+---------+------------+
+| \-              | HCM     | 3191       |
++-----------------+---------+------------+
+| Risk factor \>2 | HCM ICD | 78         |
++-----------------+---------+------------+
+| \-              | HCM     | 3594       |
++-----------------+---------+------------+
 
 ## Methods
 
@@ -97,7 +128,9 @@ These are
 
 We included the option of a fuzzy decision boundary such that near the threshold there is some random variation as to whether a patient received an ICD or not.
 
-This gives us starting state populations for HCM with ICD and HCM without ICD which will be different for each risk decision rule.
+### Markov model
+
+Th patient data give us starting state populations for HCM with ICD and HCM without ICD which will be different for each risk decision rule.
 Further, the transition probabilities from these states will differ because of the case mixes.
 
 A diagram of the current cohort model is given below.
@@ -118,20 +151,58 @@ p_{11} & p_{12} & 0 & 0 & p_{15}\\
 \end{pmatrix}
 $$
 
-We have used a year step size but if eg cost are accrued at different intervals then this can be adapted.
-The time horizon is set at 12 years but can be changed.
+We have used a year step size but if e.g. cost are accrued at different intervals then this can be adapted.
+The time horizon is set at 12 years from time of implant.
+
+### State health and cost equations
+
+We assume that an ICD patient has 2 annual appointments.
+All shocks are treated the same in terms of costs and health impact.
+Implantation can have complications.
+The cost of an implant complication is taken as a weighted sum of infection and dislodgement cost with values from [@Smith2013].
+
+-   Annual health: $$
+    e^0_{s=1}(t) = e^1_{s=1}(t) = u\_hcm + u\_icd
+    $$
+
+$$
+e^0_{s=2}(t) = e^1_{s=2}(t) = u\_shock
+$$
+
+$$
+e^0_{s}(t) = e^1_{s}(t) = 0, \;\; s = 3,4,5,6
+$$
+
+-   Initial costs: $$
+    c^0_{s=1}(t = 0) = c\_icd + p\_compl \times c\_compl
+    $$
+
+$$
+c^1_{s=1}(t = 0) = c\_icd + c\_rscore + p\_compl \times c\_compl
+$$
+
+-   Annual cost: $$
+    c^0_{s=1}(t) = c^1_{s=1}(t) = 2 c\_icd\_appt, \;\; t \neq t\_repl
+    $$
+
+$$
+c^0_{s=2}(t) = c^1_{s=2}(t) = c\_nfatal
+$$
+
+-   Implant replacement cost $$
+    c^0_{s=1}(t = t\_repl) = c^1_{s=1}(t = t\_repl) = 2 c\_icd\_appt + c\_icd\_repl + p\_compl \times c\_compl
+    $$
 
 #### Transition probability inference
 
-Using WinBUGS called from R, each new data set is used to generate posterior samples of transition probabilities.
-Denote $x$ as the observed number of transitions, $p$ the probability of a transition and $n$ as the total number of transitions from a given state. The hyperparameters $\alpha$ characterise the prior knowledge on $p$.
+Using WinBUGS [@Zhang2014] called from R, each new data set is used to generate posterior samples of transition probabilities.
+Denote $x$ as the observed number of transitions, $p$ the probability of a transition and $n$ as the total number of transitions from a given state.
+The hyperparameters $\alpha$ characterise the prior knowledge on $p$.
 Superscripts indicate the decision rule used.
 
-$$x^{(1)}_{i.} \sim \mbox{Multinomial}(p^{(1)}_{i.}, n^{(1)}_i), \;\; i = 1,3$$
-$$x^{(2)}_{i.} \sim \mbox{Multinomial}(p^{(2)}_{i.}, n^{(2)}_i), \;\; i = 1,3$$
+$$x^{(1)}_{i.} \sim \mbox{Multinomial}(p^{(1)}_{i.}, n^{(1)}_i), \;\; i = 1,3$$ $$x^{(2)}_{i.} \sim \mbox{Multinomial}(p^{(2)}_{i.}, n^{(2)}_i), \;\; i = 1,3$$
 
-$$p^{(1)}_{i.} \sim \mbox{Dirichlet}(\boldsymbol{\alpha}^{(1)} ), \;\; i = 1,3$$
-$$p^{(2)}_{i.} \sim \mbox{Dirichlet}(\boldsymbol{\alpha}^{(2)} ), \;\; i = 1,3$$
+$$p^{(1)}_{i.} \sim \mbox{Dirichlet}(\boldsymbol{\alpha}^{(1)} ), \;\; i = 1,3$$ $$p^{(2)}_{i.} \sim \mbox{Dirichlet}(\boldsymbol{\alpha}^{(2)} ), \;\; i = 1,3$$
 
 For all sink states,
 
@@ -142,8 +213,6 @@ p^{(s)}_{ij} = \left\{
 0 & \mbox{if $i \neq j$}.
 \end{array} \right.
 $$
-
-
 
 ## Workflow
 
@@ -167,6 +236,4 @@ This shows that for the new algorithm there are fewer scd and more shocks.
 
 ![](../../images/state_pop_over_time.png)
 
-
 # References
-

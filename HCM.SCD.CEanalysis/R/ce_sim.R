@@ -45,6 +45,10 @@ ce_sim <- function(pop,
 
   for (k in seq_len(n_interv)) {
     for (i in seq_len(n_sim)) {
+
+      # sample costs
+      rc_unit <- c_unit()
+
       for (j in seq_len(tmax)) {
 
         # time-homogeneous dim 1
@@ -62,19 +66,22 @@ ce_sim <- function(pop,
 
         e_state <- e_unit[[k]]*(1 - pdecr[[k]])^j
 
-        cost[[k]][i, j] <- c_unit[[j]][[k]] %*% pop[[k]][, j, i]
+        cost[[k]][i, j] <- rc_unit[[j]][[k]] %*% pop[[k]][, j, i]
 
         eff[[k]][i, j] <- e_state %*% pop[[k]][, j, i]
 
         dcost[[k]][i, j] <- cost[[k]][i, j] / disc
         deff[[k]][i, j] <- eff[[k]][i, j] / disc
       }
-    }
 
-    if (!any(is.na(c_init))) {
       # add one-off starting state costs
-      cost[[k]][, 1] <- dcost[[k]][, 1] <-
-        c_init[[k]] %*% pop[[k]][,1,1]
+      if (is.function(c_init)) {
+        cost[[k]][i, 1] <-
+          cost[[k]][i, 1] + c_init()[[k]] %*% pop[[k]][,1,1]
+
+        dcost[[k]][i, 1] <-
+          dcost[[k]][i, 1] + c_init()[[k]] %*% pop[[k]][,1,1]
+      }
     }
   }
 
@@ -83,5 +90,13 @@ ce_sim <- function(pop,
        dcost = dcost,
        eff = eff,
        deff = deff)
+}
+
+
+#
+next_pop <- function(pop, k, i, j, t) {
+  function(s) {
+    t(pop[[k]][, j - 1, i]) %*% probs[[k]][, s, t, i]
+  }
 }
 

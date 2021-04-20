@@ -1,9 +1,9 @@
 model {
 
-  # 1 ICD      x x x 0 0 0
+  # 1 ICD      . . . 0 0 0
   # 2 shock    1 0 0 0 0 0
   # 3 death    0 0 1 0 0 0
-  # 4 low risk 0 0 0 x x x
+  # 4 low risk 0 0 0 . . .
   # 5 scd      0 0 0 0 1 0
   # 6 death    0 0 0 0 0 1
 
