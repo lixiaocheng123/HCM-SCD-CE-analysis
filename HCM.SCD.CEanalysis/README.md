@@ -11,7 +11,8 @@ Hypertrophic cardiomyopathy(HCM) is a leading cause of sudden cardiac death (SCD
 
 ### Aim
 
-The aim of this study was to perform a cost-effectiveness analysis for the new SCD risk prediction model. See for more information: [C O'Mahony (2014) A novel clinical risk prediction model for sudden cardiac death in hypertrophic cardiomyopathy (HCM risk-SCD). Eur Heart;35(30):2010-20.](https://pubmed.ncbi.nlm.nih.gov/24126876/)
+The aim of this study was to perform a cost-effectiveness analysis for the new SCD risk prediction model. See for more information:
+[C O'Mahony (2014) A novel clinical risk prediction model for sudden cardiac death in hypertrophic cardiomyopathy (HCM risk-SCD). Eur Heart;35(30):2010-20.](https://pubmed.ncbi.nlm.nih.gov/24126876/)
 
 ### Overview
 
@@ -23,7 +24,10 @@ We develop a predictive model for assessing risk of SCD among patients with HCM.
 
 The model structure consists of a decision tree component and a Markov model component. In effect this first model is represented by different cohorts of the data in the fitting process.
 
-<img src="images/model_diagram.png" alt="drawing" width="500"/>
+<div class="figure" style="text-align: center">
+<img src="images/model_diagram.png" alt="Markov model diagram. Bold circles represent starting states and dashed circles represent sink states." width="234" />
+<p class="caption">Markov model diagram. Bold circles represent starting states and dashed circles represent sink states.</p>
+</div>
 
 ### Data
 
@@ -41,7 +45,7 @@ Individual HCM patient level data.
 | mwt2         | "mwt^2"                                                                      |
 | la           | "Left atrial size (mm)"                                                      |
 | maxlvotg     | "Maximal LVOT gradient (mmHg)"                                               |
-| fhxscd       | "Family histroy of SCD"                                                      |
+| fhxscd       | "Family history of SCD"                                                      |
 | nsvt         | "Non Sustained Ventricular Tachycardia"                                      |
 | syncope      | "Syncope (blackout)"                                                         |
 | na           | "Nelson-Aalen cumulative hazard"                                             |
@@ -85,3 +89,13 @@ Individual HCM patient level data.
 | centre_cat4  | "centre2==London"                                                            |
 | centre_cat5  | "centre2==Murcia"                                                            
 | centre_cat6  | "centre2==Naples"   
+
+## Workflow
+
+The main files to perform the analysis are:
+
+-   `prep_study_data.R` munges the raw data and save the input data in `data/`
+-   `BUGS/script.R` runs the BUGS code in `BUGS/model.txt`
+-   `main-ce-analysis.R` performs the cost-effectiveness analysis
+-   `pop_counts_plot.R` creates output plots
+

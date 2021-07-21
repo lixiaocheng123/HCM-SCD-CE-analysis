@@ -29,15 +29,16 @@ data("data_set1")
 CYCLE <- 1 #year
 
 # non-deterministic decision rule
-FUZZY_RISK <- TRUE
+# random at boundary
+FUZZY_RISK <- FALSE
 
 fuzzy_noise <-
   if (FUZZY_RISK) {
     rnorm(nrow(data_set1), 0, 0.001)
   } else {0}
 
-
 # subset cohort
+# by number of risk factors
 rf_threshold <- 1
 
 ipd_risk <-

@@ -1,12 +1,14 @@
 
-#' obs_aggr_trans_mat
+#' Aggregate transition matrix
 #'
 #' Create aggregate observed transition counts
 #' see p.185 Table 5.2 chapter 5 in BCEA book
 #'
-#' Assume 3 state model: "healthy", "scd_count", "non_scd_count"
+#' Assume 3 state model:
+#' 1) healthy 2) scd_count 3) non_scd_count
 #'
 #' @param data new state arrivals at time step
+#'             result of running `annual_trans_counts()`
 #'             e.g. data = data_rule$`FALSE`
 #' @param max_year
 #' @export
@@ -30,17 +32,17 @@ obs_aggr_trans_mat <- function(data,
     trans_mat[[i + 1]] <- trans_mat[[i]]
 
     # new transitions
-      trans_mat[[i + 1]]["healthy", state_names] <-
-        trans_mat[[i + 1]]["healthy", state_names] +
-        unlist(data[i, state_names])
+    trans_mat[[i + 1]]["healthy", state_names] <-
+      trans_mat[[i + 1]]["healthy", state_names] +
+      unlist(data[i, state_names])
 
-      trans_mat[[i + 1]]["scd_count", "scd_count"] <-
+    trans_mat[[i + 1]]["scd_count", "scd_count"] <-
       trans_mat[[i + 1]]["scd_count", "scd_count"] +
-        trans_mat[[i]]["healthy", "scd_count"]
+      trans_mat[[i]]["healthy", "scd_count"]
 
-      trans_mat[[i + 1]]["non_scd_count", "non_scd_count"] <-
+    trans_mat[[i + 1]]["non_scd_count", "non_scd_count"] <-
       trans_mat[[i + 1]]["non_scd_count", "non_scd_count"] +
-        trans_mat[[i]]["healthy", "non_scd_count"]
+      trans_mat[[i]]["healthy", "non_scd_count"]
   }
 
   names(trans_mat) <- c(0:max_year)
