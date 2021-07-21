@@ -256,10 +256,14 @@ We give results of the model fitting and cost-effectiveness analysis.
 
 ### Model fitting
 
-Figure \@ref(fig:hist) gives a histogram of posterior distributions for state transition probabilities.
+Figures \@ref(fig:histnoICD) and \@ref(fig:histICD) give histograms of posterior distributions for state transition probabilities for no groups without and with ICD implants.
 
-```{r hist, fig.align="center", echo=FALSE, out.width = "80%", fig.cap="Histogram of posterior distributions for state transition probabilities."}
-knitr::include_graphics("posterior_histograms.png")
+```{r histnoICD, fig.align="center", echo=FALSE, out.width = "80%", fig.cap="Histogram of posterior distributions for state transition probabilities."}
+knitr::include_graphics("../../images/post_hist_noICD.png")
+```
+
+```{r histICD, fig.align="center", echo=FALSE, out.width = "80%", fig.cap="Histogram of posterior distributions for state transition probabilities."}
+knitr::include_graphics("../../images/post_hist_withICD.png")
 ```
 
 Figure \@ref(fig:statepop) gives an example of state occupancy over time plot.

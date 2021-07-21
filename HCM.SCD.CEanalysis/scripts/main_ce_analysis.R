@@ -42,7 +42,7 @@ S <- length(n_init$obs)
 J <- 12                 # max time (year)
 
 
-# utilities and costs --------
+#### utilities
 # for each intervention
 
 u_hcm <- 0.637       # managed with an ICD (Noyes 2007)
@@ -56,17 +56,13 @@ e_unit <-
        risk6 = c(u_hcm + u_icd, u_shock, 0,
                  u_hcm,         0,       0))
 
+### costs
 
 c_shock <- 22880      # non-fatal HCM related events (UK Stroke Association)
 c_icd <- 4666         # EY02B NHS tariffs implantation cost
-c_rscore <- 20        # cost of admin risk score
+c_rscore <- 0#20        # cost of admin risk score
 c_icd_appt <- 10      # cost ICD initial appointment
 c_icd_repl <- 45000   # cost ICD replacement appointment
-
-# implant complication
-# Smith EHJ (2013)
-p_compl <- 0.047        # initial
-p_compl_repl <- 0.032   # replacement
 
 # weighted infection, dislodgement
 c_compl <- (0.0227*37116 + 0.00828*6146)/(0.0227 + 0.00828)
@@ -75,6 +71,11 @@ c_entry <- list(obs =   c(0, 0, 0,
                           0, 0, 0),
                 risk6 = c(0, 0, 0,
                           0, 0, 0))
+
+# implant complication
+# Smith EHJ (2013)
+p_compl <- 0.047        # initial
+p_compl_repl <- 0.032   # replacement
 
 # time to replace ICD
 t_repl <- 10
@@ -155,6 +156,8 @@ res_new <-
          e_unit,
          rc_init(c_icd, c_rscore),
          pdecr)
+
+save(res_new, file = "data/res_new.RData")
 
 # total cost across all time points
 c <-

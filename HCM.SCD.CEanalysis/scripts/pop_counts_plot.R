@@ -1,5 +1,6 @@
 
-# pop counts plot
+# state pop counts plot
+# over time
 # stacked percentage bar plot
 
 
@@ -65,6 +66,8 @@ facet_plot <-
   geom_bar(position = "fill", stat = "identity") +
   scale_x_continuous(breaks = 1:12) +
   facet_grid(.~strat)
+
+facet_plot
 
 ggsave(facet_plot, file = "images/state_pop_over_time.png")
 

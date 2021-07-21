@@ -14,6 +14,9 @@
 # 5 scd      0 0 0 0 1 0
 # 6 death    0 0 0 0 0 1
 
+# lambda.0: observed
+# lambda.1: > 6% risk group
+
 
 library(R2jags)
 
